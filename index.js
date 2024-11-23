@@ -6,6 +6,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
+const servicesApi= require('./data/services.json')
 
 // middleware
 app.use(cors({
@@ -20,9 +21,9 @@ app.use(express.json());
 app.use(cookieParser());
 
 
-console.log(process.env.DB_PASS)
+console.log()
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.swu9d.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.au5qi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -85,36 +86,13 @@ async function run() {
 
         // services related api
         app.get('/services', async (req, res) => {
-            const filter = req.query;
-            console.log(filter);
-            const query = {
-                // price: { $lt: 150, $gt: 50 }
-                // db.InspirationalWomen.find({first_name: { $regex: /Harriet/i} })
-                title: {$regex: filter.search, $options: 'i'}
-            };
-
-            const options = {
-                sort: {
-                    price: filter.sort === 'asc' ? 1 : -1
-                }
-            };
-
-            const cursor = serviceCollection.find(query, options);
-            const result = await cursor.toArray();
-            res.send(result);
+            res.send(servicesApi);
         })
 
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id;
-            const query = { _id: new ObjectId(id) }
-
-            const options = {
-                // Include only the `title` and `imdb` fields in the returned document
-                projection: { title: 1, price: 1, service_id: 1, img: 1 },
-            };
-
-            const result = await serviceCollection.findOne(query, options);
-            res.send(result);
+    const service = servicesApi.find(c => c._id === id)
+    res.send(service)
         })
 
 
